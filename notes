@@ -1,0 +1,69 @@
+------------------------     CONTEXT API - Setup -------------------
+/*==================================
+1. setup: state-providers  //make's access to state from anywhere
+===================================*/
+
+//StateProvider.js
+import React, {createContext, useContext, useReducer} from "react";
+export const StateContext = createContext();
+export const StateProvider = ({reducer, initialState, children}) => (
+    <StateContext.Provider value={ useReducer(reducer, initialState) }>
+        {children}
+    </StateContext.Provider>
+);
+export const useStateValue = () => useContext(StateContext);
+
+/*==================================
+2. adding Provider to our <App/>  
+===================================*/
+
+//App.js
+ 
+
+import { useStateValue } from './StateProvider';
+
+const [{user},dispatch] = useStateValue(); //access and modify state
+
+const hangeChangeUser = user => {
+   dispatch({
+     type: "SET_USER",
+     user
+   })
+}
+
+console.log(user, ":CURRENT")
+
+return (
+  <div className="App">
+    <button onClick={()=> hangeChangeUser({name: 'aespa', email: 'aespa@gmail.com'}) } >Change User to aespa</button>
+    <button onClick={()=> hangeChangeUser({name: 'jhonny', email: 'johnathan@gmail.com'}) } >Change User to jhonny</button>
+    <button onClick={()=> hangeChangeUser({}) } >Set To Null</button>
+  </div>
+ );
+}
+
+
+/*==================================
+3. setting our reducer's //function that manage state
+===================================*/
+export const initialState = {
+    user: null,
+};
+
+export const reducer = (state, action) => {
+    console.log("A",action);
+    console.log("S",state);
+
+    switch(action.type){
+        case "SET_USER":
+            return {
+                ...state,
+                user: action.user
+            }
+        default: 
+            return state;
+    }
+}
+
+
+
